@@ -24,6 +24,10 @@ export AUTO_NOTIFY_VERSION="0.10.2"
         'nano'
     )
 
+function _auto_notify_get_active_window_id() {
+    hyprctl activewindow | awk '/Window/ {print $2}'
+}
+
 function _auto_notify_format() {
     local MESSAGE="$1"
     local command="$2"
@@ -130,7 +134,7 @@ function _auto_notify_send() {
         return
     fi
 
-    if [[ "$(_is_auto_notify_ignored "$AUTO_COMMAND_FULL")" == "no" ]]; then
+    if [[ "$(_is_auto_notify_ignored "$AUTO_COMMAND_FULL")" == "no" && "$(_auto_notify_get_active_window_id)" != $AUTO_NOTIFY_WINDOW_ID ]]; then
         local current="$(date +"%s")"
         let "elapsed = current - AUTO_COMMAND_START"
 
@@ -151,6 +155,7 @@ function _auto_notify_track() {
     AUTO_COMMAND="${1:-$2}"
     AUTO_COMMAND_FULL="$3"
     AUTO_COMMAND_START="$(date +"%s")"
+    AUTO_NOTIFY_WINDOW_ID="$(_auto_notify_get_active_window_id)"
 }
 
 function _auto_notify_reset_tracking() {
@@ -160,6 +165,8 @@ function _auto_notify_reset_tracking() {
     unset AUTO_COMMAND_FULL
     # Command that the user has executed
     unset AUTO_COMMAND
+    # PID of the window where command has executed
+    unset AUTO_NOTIFY_WINDOW_ID
 }
 
 function disable_auto_notify() {
