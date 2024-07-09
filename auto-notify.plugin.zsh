@@ -168,7 +168,7 @@ function _auto_notify_reset_tracking() {
     unset AUTO_COMMAND_FULL
     # Command that the user has executed
     unset AUTO_COMMAND
-    # PID of the window where command has executed
+    # ID of the window where command has executed
     unset AUTO_NOTIFY_WINDOW_ID
 }
 
